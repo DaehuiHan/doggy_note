@@ -1,0 +1,158 @@
+<!Doctype html>
+<html lang="ko">
+
+    <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta property="og:title" content="Doggy Note" />
+    <meta property="og:description" content="우리 강아지들이 잘 지낼까요?" />
+    <meta property="og:image" content="{{ url_for('static', filename='ogimage.jpeg') }}" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+
+    <!-- Bulma CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <!-- Font Awesome CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+        <!-- JS -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+
+        <!-- 구글폰트 -->
+        <link href="https://fonts.googleapis.com/css2?family=Sunflower:wght@300&display=swap" rel="stylesheet">
+
+
+        <title>DoggyNote | Login</title>
+
+        <!-- style -->
+        <style type="text/css">
+            * {
+                font-family: 'Sunflower', sans-serif;
+            }
+            .wrap {
+                width: 1000px;
+                margin: auto;
+                background-size: contain;
+            }
+            .subtitle{
+                padding-top: 10px;
+            }
+            .hero-body {
+                text-align: center;
+            }
+    
+    
+        </style>
+        <script>
+               {% if msg %}
+                   alert("{{ msg }}")
+                {% endif %}
+            function sign_in() {
+                let username = $("#input-username").val()
+                let password = $("#input-password").val()
+
+                if (username == "") {
+                    $("#help-id-login").text("아이디를 입력해주세요.")
+                    $("#input-username").focus()
+                    return;
+                } else {
+                    $("#help-id-login").text("")
+                }
+
+                if (password == "") {
+                    $("#help-password-login").text("비밀번호를 입력해주세요.")
+                    $("#input-password").focus()
+                    return;
+                } else {
+                    $("#help-password-login").text("")
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "/sign_in",
+                    data: {
+                        username_give: username,
+                        password_give: password
+                    },
+                    success: function (response) {
+                        if (response['result'] == 'success') {
+                            $.cookie('mytoken', response['token'], {path: '/'});
+                            window.location.replace("/")
+                        } else {
+                            alert(response['msg'])
+                        }
+                    }
+                });
+            }
+
+
+        </script>
+    
+
+    </head>
+
+    <body>
+        <div class="wrap">
+        <section class="hero is-warning">
+            <div class="hero-body">
+                <p class="title">
+                    Doggy Note
+                </p>
+                <p class="subtitle">
+                    로그인
+                </p>
+            </div>
+        </section>
+    
+        <section class="section">
+            <div class="container">
+                <div class="box" style="max-width: 480px;margin:auto">
+                    <article class="media">
+                        <div class="media-content">
+                            <div class="content">
+                                <div class="field has-addons">
+                                    <div class="control has-icons-left" style="width:100%">
+                                        <input id="input-username" class="input" type="text" placeholder="아이디">
+                                        <span class="icon is-small is-left"><i class="fa fa-user"></i></span>
+                                    </div>
+                                </div>
+                                <p id="help-id-login" class="help is-danger"></p>
+
+                                <div class="field">
+                                    <div class="control has-icons-left">
+                                        <input id="input-password" class="input" type="password" placeholder="비밀번호">
+                                        <span class="icon is-small is-left"><i class="fa fa-lock"></i></span>
+                                    </div>
+                                    <p id="help-password-login" class="help is-danger"></p>
+
+                                </div>
+
+                            </div>
+                            <div id="div-sign-in-or-up" class="has-text-centered">
+                                <nav class="level is-mobile">
+                                    <button class="level-item button" onclick="sign_in()">
+                                        로그인
+                                    </button>
+
+                                </nav>
+                                <hr>
+                                <h4 class="mb-3">아직 회원이 아니라면?</h4>
+                                <nav class="level is-mobile">
+
+                                    <button class="level-item button is-sparta is-outlined"
+                                            onclick="window.location.replace('/sign_up')">
+                                        회원가입하기
+                                    </button>
+                                </nav>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+            </div>
+        </section>
+    </div>
+    </body>
+
+</html>

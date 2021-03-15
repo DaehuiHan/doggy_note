@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta property="og:title" content="Doggy Note"/>
+    <meta property="og:description" content="우리 강아지들이 잘 지낼까요?"/>
+    <meta property="og:image" content="{{ url_for('static', filename='ogimage.jpeg') }}"/>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <title>DoggyNote</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Sunflower:wght@300&display=swap" rel="stylesheet">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            bsCustomFileInput.init()
+        })
+
+        function posting() {
+            let name = $('#name').val();
+            let date = $('#datepicker').val();
+            let sleep = $('#sleep').val();
+            let poop = $('#poop').val();
+            let feeding = $('#feeding').val();
+            let condition = $('#condition').val();
+            let another = $('#another').val();
+            let file = $('#file')[0].files[0]
+            let writer = document.querySelector('.writer').textContent
+            if (name === '') {
+                alert('이름을 입력해주세요!')
+                return
+            }
+            if (date === '') {
+                alert('날짜를 입력해주세요!')
+                return
+            }
+            if (sleep === '') {
+                alert('낮잠시간을 입력해주세요!')
+                return
+            }
+            if (poop === '') {
+                alert('배변유무를 입력해주세요!')
+                return
+            }
+            if (feeding === '') {
+                alert('식사를 입력해주세요!')
+                return
+            }
+            if (condition === '') {
+                alert('기분을 입력해주세요!')
+                return
+            }
+            if (file === undefined) {
+                alert('사진을 첨부해주세요!')
+                return
+            }
+            let form_data = new FormData()
+            form_data.append("file_give", file)
+            form_data.append("name_give", name)
+            form_data.append("date_give", date)
+            form_data.append("sleep_give", sleep)
+            form_data.append("poop_give", poop)
+            form_data.append("feeding_give", feeding)
+            form_data.append("condition_give", condition)
+            form_data.append("another_give", another)
+            form_data.append("writer_give", writer)
+
+            $.ajax({
+                type: "POST",
+                url: "/diarys",
+                data: form_data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    alert(response['msg'])
+                    window.location.reload();
+                }
+            })
+        }
+
+        function gotoDetail(post_id) {
+            window.location.href = `/detail/${post_id}`
+        }
+
+        function onLogOut() {
+            $.removeCookie('mytoken');
+            alert('안녕히가세요!')
+            window.location.href = '/login'
+        }
+
+    </script>
+
+    <style>
+        * {
+
+            font-family: 'Sunflower', sans-serif;
+        }
+
+        .wrap {
+            width: 1000px;
+            margin: auto;
+            background-size: contain;
+        }
+
+        .hero-body {
+            text-align: center;
+        }
+
+        .body {
+            width: 600px;
+            height: 580px;
+            margin: auto;
+            margin-top: 50px;
+            padding: 20px 15px 20px 15px;
+            border: 2px solid darkgray;
+        }
+
+        .input {
+            width: 300px;
+            height: 28px;
+        }
+
+        .btn-logout {
+            float: right;
+        }
+
+        #datepicker {
+            width: 300px;
+            display: inline;
+            margin-left: 22px;
+        }
+
+        .cards-box {
+            display: flex;
+            margin: 0 70px;
+            margin-top: 65px;
+            flex-wrap: wrap;
+            float: left;
+        }
+
+        .btn-detail {
+            float: right;
+        }
+
+        .card-body-ul {
+            padding-left: 20px;
+            list-style: circle;
+        }
+
+        .writer {
+            display: inline-block;
+            padding-left: 10px;
+        }
+    </style>
+
+</head>
+
+<body>
+<div class="wrap">
+    <section class="hero is-warning">
+        <div class="hero-body">
+            <p class="title">
+                Doggy Note
+            </p>
+            <p class="subtitle">
+                welcome to Doggy Note!!
+            </p>
+            <button onclick="onLogOut()" class="button is-danger btn-logout">로그아웃</button>
+        </div>
+    </section>
+    <div class="body">
+        <div style="margin: 10px;">
+            <div>작성자 :
+                <div class="writer">{{ username }}</div>
+            </div>
+        </div>
+        <div style="margin: 10px;">
+            <p>이름 : <input style="margin-left: 22px;" type="text" class="input" id="name"/></p>
+        </div>
+        <div style="margin: 0px 0px 0px 10px;">
+            <label for="datepicker">날짜:</label>
+            <input id="datepicker" type="date" style="margin-left: 24px; height: 29px; padding-bottom: 5px"/>
+        </div>
+        <div style="margin: 2px 10px 10px 10px;">
+            <p>낮잠 : <input style="margin-left: 22px;" type="text" class="input" id="sleep"/></p>
+        </div>
+        <div style="margin: 10px;">
+            <p>배변 : <input style="margin-left: 22px;" type="text" class="input" id="poop"/></p>
+        </div>
+        <div style="margin: 10px;">
+            <p>feeding : <input type="text" class="input" id="feeding"/></p>
+        </div>
+        <div style="margin: 10px;">
+            <p>기분 : <input style="margin-left: 22px;" type="text" class="input" id="condition"/>
+            </p>
+        </div>
+        <div style="margin: 15px 10px 0px 10px;">
+            <p>특이 사항 : <textarea class="textarea" placeholder="오늘 활동 내용을 입력해주세요" id="another"></textarea></p>
+        </div>
+
+        <div class="custom-file">
+            <div class="custom-file" style="margin-left: 10px; margin-top: 10px; width: 545px">
+                <input type="file" class="custom-file-input" id="file" accept=".jpeg, .jpg, .png">
+                <label class=" custom-file-label">Choose file</label>
+            </div>
+            <div class="btn-detail">
+                <button style="margin-top: 25px; margin-left: 450px" class="button is-warning is-light"
+                        onclick="posting()" href="/detail">
+                    저장하기
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card-colums" id="all_posting">
+        <div id="card-box" class="cards-box">
+            {% for post in posts %}
+                <div class="card" style="width: 17rem; margin-bottom:15px; margin-left: 10px;">
+                    <img class="card-img-top" src="static/{{ post.file }}" alt="Card image cap"
+                         style="border-bottom: 1px solid #eee; height: 200px;">
+                    <div class="card-body">
+                        <ul class='card-body-ul'>
+                            <li> 이름 : {{ post.name }}</li>
+                            <li> 날짜 : {{ post.date }}</li>
+                            <li> 작성자 : {{ post.writer }}</li>
+                        </ul>
+                        <div class="btn-detail">
+                            <button class="button is-warning is-light"
+                                    style='margin-left: 100px; margin-bottom: 13px; height: 25px'
+                                    onclick="gotoDetail('{{ post._id }}')">자세히
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

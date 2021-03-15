@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta property="og:title" content="Doggy Note" />
+    <meta property="og:description" content="우리 강아지들이 잘 지낼까요?" />
+    <meta property="og:image" content="{{ url_for('static', filename='ogimage.jpeg') }}" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+
+    <title>DoggyNote | Detail</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Sunflower:wght@300&display=swap" rel="stylesheet">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
+
+    <style>
+        * {
+
+            font-family: 'Sunflower', sans-serif;
+        }
+
+        .wrap {
+            width: 1000px;
+            margin: auto;
+            background-size: contain;
+        }
+
+        .hero-body {
+            text-align: center;
+        }
+
+        .body {
+
+            width: 600px;
+            margin: auto;
+            margin-top: 50px;
+            padding: 20px 15px 20px 15px;
+            border: 2px solid darkgray;
+            text-align: center;
+        }
+
+        .noresize {
+            resize: none;
+        }
+
+        .input {
+            width: 300px;
+            height: 28px;
+        }
+
+        #datepicker {
+            width: 300px;
+            display: inline;
+            margin-left: 22px;
+        }
+
+        .modalbody {
+            margin: 10px auto 10px auto;
+        }
+
+        .btn-update {
+            margin-right: 10px;
+        }
+
+        .btns {
+            margin-top: 20px;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            bsCustomFileInput.init()
+        })
+
+        function updatePost() {
+            let name = $('#name').val();
+            let date = $('#datepicker').val();
+            let sleep = $('#sleep').val();
+            let poop = $('#poop').val();
+            let feeding = $('#feeding').val();
+            let condition = $('#condition').val();
+            let another = $('#another').val();
+            let currentImgSrc = document.querySelector('.card-img-top').src
+            let file = $('#file')[0].files[0]
+
+            let form_data = new FormData()
+            form_data.append("file_give", file)
+            form_data.append("name_give", name)
+            form_data.append("date_give", date)
+            form_data.append("sleep_give", sleep)
+            form_data.append("poop_give", poop)
+            form_data.append("feeding_give", feeding)
+            form_data.append("condition_give", condition)
+            form_data.append("another_give", another)
+            form_data.append("currentImgSrc_give", currentImgSrc)
+
+            $.ajax({
+                type: "POST",
+                url: "/update_post",
+                data: form_data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response["result"] == "success") {
+                        alert(response["msg"])
+                        window.location.reload()
+
+                    }
+                }
+            })
+        }
+    </script>
+</head>
+
+<body>
+    <div class="wrap">
+        <section class="hero is-warning">
+            <div class="hero-body">
+                <a href="window.location.href('/')">
+                <p class="title">
+                    Doggy Note
+                </p>
+            </a>
+                <p class="subtitle">
+                    welcome to Doggy Note!!
+                </p>
+                <button onclick="window.location.replace('/')" class="button is-danger btn-logout">뒤로가기</button> 
+                {% if post[0]['writer'] == username %}       
+                <button onclick='$("#modal-edit").addClass("is-active")' class="button is-info btn-logout btn-update">수정하기</button>
+                {% endif %}        
+            </div>
+        </section>
+
+        <div class="body" style="table-layout: fixed; word-break: break-all">
+            {% for list in post %}
+                {% set name = list['name'] %}
+                {% set date = list['date'] %}
+                {% set image = list['image'] %}
+                {% set sleep = list['sleep'] %}
+                {% set poop = list['poop'] %}
+                {% set condition = list['condition'] %}
+                {% set feeding = list['feeding'] %}
+                {% set another = list['another'] %}
+                {% set file = list['file'] %}
+                <p style="font-size: 30px; background-color: white">이름 : {{ name[:6] }}</p>
+                <p style="font-size: 20px; background-color: white">날짜 : {{ date }}</p>
+                <div><img class="card-img-top" src="../static/{{ file }}" alt="Card image cap"></div>
+                <div>
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th scope="row" style="width: 100px;">낮잠</th>
+                                <td>{{ sleep }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" style="width: 100px;">배변</th>
+                                <td>{{ poop }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" style="width: 100px;">기분</th>
+                                <td>{{ condition }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" style="width: 100px;">feeding</th>
+                                <td>{{ feeding }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1">그 외 특이사항</label>
+                        <textarea class="form-control noresize" style="background-color: white;"
+                            id="exampleFormControlTextarea1" rows="3" placeholder="{{ another }}"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal" id="modal-edit">
+                    <div class="modal-background" onclick='$("#modal-edit").removeClass("is-active")'></div>
+                    <div class="modal-content">
+                        <div class=" body modalbody">
+                            <div style="margin: 10px;">
+                                <p>이름 : <input style="margin-left: 22px;" type="text" class="input" id="name" value={{ name }} /></p>
+                            </div>
+                            <div style="margin: 10px;">
+                                <label for="datepicker">날짜:</label>
+                                <input id="datepicker" type="date" style="margin-left: 24px; height: 29px; padding-bottom: 5px"
+                                    class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-small" value={{ date }} />
+                            </div>
+                            <div style="margin: 2px 10px 10px 10px;">
+                                <p>낮잠 : <input style="margin-left: 22px;" type="text" class="input" id="sleep" value={{ sleep }} /></p>
+                            </div>
+                            <div style="margin: 10px;">
+                                <p>배변 : <input style="margin-left: 22px;" type="text" class="input" id="poop" value={{ poop }} /></p>
+                            </div>
+                            <div style="margin: 10px;">
+                                <p>feeding : <input type="text" class="input" id="feeding" value={{ feeding }} /></p>
+                            </div>
+                            <div style="margin: 10px;">
+                                <p>기분 : <input style="margin-left: 22px;" type="text" class="input" id="condition" value={{ condition }} />
+                                </p>
+                            </div>
+                            <div style="margin: 15px 10px 0px 10px;">
+                                <p>특이 사항 : <textarea class="textarea" placeholder="..." id="another" >{{another}}</textarea></p>
+                            </div>
+                
+                            <div class="custom-file">
+                                <div class="custom-file" style="margin-left: 10px; margin-top: 10px; width: 545px">
+                                    <input type="file" class="custom-file-input" id="file" accept=".jpeg, .jpg, .png"">
+                                    <label class=" custom-file-label">Choose file</label>
+                                </div>
+                            </div>
+                            <div class="btns">
+                                    <button style="width:90px" class="button is-info" onclick="updatePost()">
+                                        수정하기
+                                    </button>
+                                    <button style="width:90px" class="button is-danger"
+                                        onclick='$("#modal-edit").removeClass("is-active")'>
+                                        취소
+                                    </button>
+                        </div>
+                   </div>
+                    <button class="modal-close is-large" aria-label="close"
+                            onclick='$("#modal-edit").removeClass("is-active")'></button>
+                </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</body>
+
+</html>
